@@ -1,0 +1,28 @@
+<html>
+<head>
+<title>Document</title>
+ <link rel="stylesheet" href="{{ asset('node_modules/bootstrap/dist/css/bootstrap.css')}}">
+</head>
+<body>
+  <table class="table">
+    <tr>
+       {% for note in notes %}
+       <td>
+           {{ note }}
+       </td>  
+        {% endfor %}
+    </tr>
+  </table>
+  <div class="alert alert-info">
+    <p>
+        Nombre de valeurs: {{ notes | length }}
+    </p>
+    <p>
+       Min : {{ min(notes) }}
+    </p>
+    <p>
+     Max : {{ max(notes) }}
+    </p>
+</div>
+</body>
+</html>
