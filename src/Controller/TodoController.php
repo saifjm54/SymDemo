@@ -77,7 +77,7 @@ class TodoController extends AbstractController
     public function resetTodo(Request $request) : RedirectResponse{
         $session = $request->getSession();
         $session->remove('todos');
-        return $this->redirectToRoute('todo');
+        return $this->redirectToRoute('/todo');
     }
     
     #[Route('multi/{op1<\d+>}/{op2<\d+>}',

@@ -1,0 +1,8 @@
+{% extends 'base.html.twig' %}
+{% block title%} {{ personne.firstname}} {{ personne.name }} {% endblock %}
+
+{% block content %}
+<div class="alert alert-info">
+  {{ personne.firstname}} {{ personne.name }} a {{ personne.age }}
+</div>
+{% endblock %}
