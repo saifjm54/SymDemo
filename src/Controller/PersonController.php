@@ -5,17 +5,28 @@ namespace App\Controller;
 use App\Entity\Person;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('personne')]
 class PersonController extends AbstractController
 {
-    #[Route('/',name:'person.list')]
-    public function index(ManagerRegistry $doctrine):Response{
+    #[Route('/all/age/{ageMin}/{ageMax}',name:'person.list.age')]
+    public function index(ManagerRegistry $doctrine,$ageMin,$ageMax):Response{
         $repository = $doctrine->getRepository(Person::class);
-        $personnes = $repository->findAll();
+        $personnes = $repository->findPersonnesByAgeInterval($ageMin,$ageMax);
         return $this->render('person/index.html.twig',['personnes' => $personnes
+    ]);
+    }
+    #[Route('/stats/age/{ageMin}/{ageMax}',name:'person.stat.age')]
+    public function statsPersonnesByAge(ManagerRegistry $doctrine,$ageMin,$ageMax):Response{
+        $repository = $doctrine->getRepository(Person::class);
+        $stats = $repository->statsPersonnesByAgeInterval($ageMin,$ageMax);
+        return $this->render('person/stats.html.twig',[
+            'stats' => $stats[0],
+            'ageMin' => $ageMin,
+            'ageMax' => $ageMax
     ]);
     }
     #[Route('/{id<\d+>}',name:'personne.detail')]
@@ -40,5 +51,23 @@ class PersonController extends AbstractController
             'page' => $page,
             'nbre' => $nbre
         ]);
+    }
+    #[Route('/delete/{id}',name:'personne.delete')]
+    public function deletePersonne(Person $person = null,ManagerRegistry $doctrine): RedirectResponse
+    {
+        // Personne existe
+        if($person){
+            // Si la personne existe => le supprimer et retourner un flashMessage de succés
+            $manager = $doctrine->getManager();
+            // Ajoute la fonction de suppression dans la transaction
+            $manager->remove($person);
+            // Executer la Transaction
+            $manager->flush();
+            $this->addFlash('success','la personne a été supprimé avec succés');
+        }else{
+            $this->addFlash('error',"Personne innexistante");
+        }
+       return  $this->redirectToRoute('personne.list.all');
+
     }
 }
